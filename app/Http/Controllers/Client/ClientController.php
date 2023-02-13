@@ -1,7 +1,7 @@
 <?php
 
-namespace App\Http\Controllers;
-
+namespace App\Http\Controllers\Client;
+use App\Http\Controllers\Controller;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
-class UserController extends Controller
+class ClientController extends Controller
 {
     public function register(Request $request){
 
@@ -18,12 +18,14 @@ class UserController extends Controller
                 'first_name'=>'required|string|min:3',
                 'last_name'=>'required|string|min:3',
                 'email'=>'required|email|unique:users,email|string',
-                'phone_number'=>'required|string|min:10',
+                'phone_number' => 'required|numeric|min:10',
                 'country'=>'required|string',
                 'gender'=>'required|string',
-                'role_id'=>'required|string',
                 'password'=>'required|min:6|confirmed'
             ]);
+       
+        
+       
     
             if($validator->fails()){
                 //throw back any errors of validation if they arise
@@ -33,14 +35,14 @@ class UserController extends Controller
                    
         
                 $user=User::create([
-                    'role_id'=>$request->role_id,
                     'first_name'=>$request->first_name,
                     'last_name'=>$request->last_name,
                     'email'=>$request->email,
                     'phone_number'=>$request->phone_number,
                     'country'=>$request->country,
                     'gender'=>$request->gender,
-                    'role_id'=>$request->role_id,
+                      // Assign the role of "client" to the user
+                    'role_id'=>'client',
                     'password'=>Hash::make($request->password)
                 ]);
         
