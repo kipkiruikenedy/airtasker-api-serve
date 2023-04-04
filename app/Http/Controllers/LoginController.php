@@ -17,8 +17,7 @@ class LoginController extends Controller
         'password' => ['required', 'min:6']]);
             
           
-       
-    
+       try {
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
             $token = $user->createToken('authToken')->accessToken;
@@ -31,6 +30,13 @@ class LoginController extends Controller
                 'error' => 'Invalid credentials, please try again'
             ], 401);
         }
+       } catch (\Throwable $th) {
+        return response()->json([
+            'error' => 'server error'
+        ], 401);
+       }
+    
+       
     }
     
         

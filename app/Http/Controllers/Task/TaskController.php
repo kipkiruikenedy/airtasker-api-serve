@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Task;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Task;
+use App\Models\Offer;
 
 class TaskController extends Controller
 {
@@ -13,9 +14,57 @@ class TaskController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+
+
+
+
+    
+
+
+
+
+  
+    public function allPendingTasks()
     {
-        //
+        $tasks = Task::where('status','pending')->get();
+        return response()->json($tasks, 200);
+    }
+
+    public function allTasks()
+    {
+        
+        $tasks = Task::all();
+        return response()->json($tasks, 200);
+        
+    }
+
+
+    public function OpenTasks()
+    {
+        $tasks = Task::where('status','OPEN')->get();
+        return response()->json($tasks, 200);
+    }
+
+    
+    public function allActiveTasks()
+    {
+        $tasks = Task::where('status','active')->get();
+        return response()->json($tasks, 200);
+    }
+    public function allCompletedTasks()
+    {
+        $tasks = Task::where('status','completed')->get();
+        return response()->json($tasks, 200);
+    }
+    public function allRejectedTasks()
+    {
+        $tasks = Task::where('status','rejected')->get();
+        return response()->json($tasks, 200);
+    }
+    public function allAsignedTasks()
+    {
+        $tasks = Task::where('status','asigned')->get();
+        return response()->json($tasks, 200);
     }
 
     /**
@@ -24,28 +73,42 @@ class TaskController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function createTask(Request $request)
     {
-        $validatedData = $request->validate([
+
+        $validated = $request->validate([
             'title' => 'required|string',
             'description' => 'required|string',
             'amount' => 'required|numeric',
-            'category' => 'required|exists:categories,id',
-            'image' => 'required|image|max:2048',
+            'category_id' => 'required|exists:categories,id',
+            'deadline' => 'string',
+            'time' => 'string',
+            'client_id'=>'numeric',
+            
         ]);
-
-        $imagePath = $request->file('image')->store('public/images');
-
-        $task = new Task;
-        $task->title = $validatedData['title'];
-        $task->description = $validatedData['description'];
-        $task->amount = $validatedData['amount'];
-        $task->category_id = $validatedData['category'];
-        $task->image_path = $imagePath;
-        $task->save();
-
-        return response()->json(['message' => 'Task created successfully'], 201);
+    
+    
+        $task=Task::create([
+            'title'=>$request->title,
+            'description'=>$request->description,
+            'amount'=>$request->amount,
+            'category_id'=>$request->category_id,
+            'deadline'=>$request->deadline,
+            'time'=>$request->time,
+            'client_id'=>$request->client_id,
+        ]);
+    
+        return response()->json([
+            'task'=>$task,
+            'message'=>'task added successfully'
+        ],201);   
     }
+
+
+
+
+
+
 
     /**
      * Display the specified resource.
@@ -53,12 +116,37 @@ class TaskController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function findTaskByID($id)
     {
-        $task = Task::findOrFail($id);
-        return response()->json(['task' => $task]);
+        $task = Task::find($id);
+
+        if (!$task) {
+            return response()->json(['error' => 'Task not found'], 404);
+        }
+
+        return response()->json($task);
     }
     
+
+
+    public function deleteById($id)
+    {
+        $task = Task::findOrFail($id);
+    
+        // Check if the authenticated user is the owner of the task
+        // if ($task->user_id !== auth()->id()) {
+        //     return response()->json(['message' => 'Unauthorized'], 401);
+        // }
+    
+        // Cancel the task
+        $task->status = 'cancelled';
+        $task->save();
+    
+        return response()->json(['message' => 'Task cancelled successfully']);
+    }
+    
+
+
 
     /**
      * Update the specified resource in storage.

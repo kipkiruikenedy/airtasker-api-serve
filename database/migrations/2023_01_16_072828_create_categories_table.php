@@ -13,13 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('responses', function (Blueprint $table) {
+        Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string("tasker_id");
-            $table->string("task_id");
-            $table->timestamp("date");
-            $table->longtext("answer");
-            $table->longtext("status")->default(0)->comment("0=rejected","1=accepted");
+            $table->string('job_category_name');
             $table->timestamps();
         });
     }
@@ -31,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('responses');
+        Schema::dropIfExists('categories');
     }
 };

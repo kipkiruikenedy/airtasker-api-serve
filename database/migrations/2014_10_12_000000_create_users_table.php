@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('email')->unique();
             $table->integer('phone_number');
+            $table->timestamp('phone_verified_at')->nullable();
             $table->string('country');
             $table->string('gender');
             $table->string('role_id');

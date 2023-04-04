@@ -13,13 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('responses', function (Blueprint $table) {
+        Schema::create('task_payment_trackers', function (Blueprint $table) {
             $table->id();
-            $table->string("tasker_id");
-            $table->string("task_id");
-            $table->timestamp("date");
-            $table->longtext("answer");
-            $table->longtext("status")->default(0)->comment("0=rejected","1=accepted");
+            $table->string("user_id");
+            $table->string("amount");
+            $table->string("payment_status")->default(0)->comment("0=unpaid","1=paid");
+            $table->string("transaction_code");
+            $table->string("payment_method");
+            $table->timestamp("payment_date");
             $table->timestamps();
         });
     }
@@ -31,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('responses');
+        Schema::dropIfExists('task_payment_trackers');
     }
 };

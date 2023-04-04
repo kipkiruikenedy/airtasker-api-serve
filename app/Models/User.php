@@ -28,6 +28,24 @@ class User extends Authenticatable
         'password',
     ];
 
+    public function ratings()
+    {
+        return $this->hasMany(Rating::class);
+    }
+
+    public function charts()
+    {
+        return $this->hasMany(PrivateChart::class, 'sender_id')->orWhere('receiver_id', $this->id);
+    }
+    /**
+     * Get all of the tasks for the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
     /**
      * The attributes that should be hidden for serialization.
      *

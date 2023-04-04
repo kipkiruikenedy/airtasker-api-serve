@@ -13,22 +13,19 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tasks', function (Blueprint $table) {
+        Schema::create('client_pay_tasks', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->string('description');
-            $table->integer('amount');
-            $table->timestamp('deadline');
-            $table->string('time');
-            $table->string('status')->default("OPEN")->comment('ASSIGNED','REJECTED','COMPLETED');
+            $table->unsignedBigInteger('task_id');
+            $table->unsignedBigInteger('tasker_id');
             $table->unsignedBigInteger('client_id');
-            $table->unsignedBigInteger('tasker_id')->nullable();
-            $table->unsignedBigInteger('category_id');
+            $table->decimal('amount', 8, 2);
+            $table->enum('status', ['pending', 'paid', 'failed']);
+            $table->string('stripe_token');
 
+            $table->foreign('task_id')->references('id')->on('tasks');
             $table->foreign('client_id')->references('id')->on('users');
             $table->foreign('tasker_id')->references('id')->on('users');
-            $table->foreign('category_id')->references('id')->on('categories');
-         
+
             $table->timestamps();
         });
     }
@@ -40,6 +37,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tasks');
+        Schema::dropIfExists('client_pay_tasks');
     }
 };

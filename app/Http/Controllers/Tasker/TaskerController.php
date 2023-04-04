@@ -9,20 +9,84 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Task;
+
 
 class TaskerController extends Controller
 {
-    public function register(Request $request)
+
+    public function updateTaskStatus(Request $request, $taskId)
     {
         try {
+            // find the task by id
+            $task = Task::findOrFail($taskId);
+    
+            // update the task status
+            $task->status = $request->status;
+            $task->save();
+    
+            // return success response
+            return response()->json([
+                'task' => $task,
+                'msg' => 'Task status updated successfully'
+            ], 200);
+    
+        } catch (\Throwable $th) {
+            // return error response
+            return response()->json(['error' => "Sorry!!,Something went wrong during task status update, please try again later"], 500);
+        }
+    }
+    
+
+    public function pendingTasks(Request $request)
+    {
+        $user_id =$request->user_id;
+
+        $tasks = Task::where('tasker_id',$user_id)
+        ->where('status', 'assigned')
+        ->get();
+        return response()->json($tasks, 200);
+      
+    }
+    public function activeTasks(Request $request)
+    {
+        $user_id =$request->user_id;
+
+        $tasks = Task::where('tasker_id',$user_id)
+        ->where('status', 'in-progress')
+        ->get();
+        return response()->json($tasks, 200);
+      
+    }
+
+    public function completedTasks(Request $request)
+    {
+        $user_id =$request->user_id;
+
+        $tasks = Task::where('tasker_id',$user_id)
+        ->where('status', 'completed')
+        ->get();
+        return response()->json($tasks, 200);
+      
+    }
+
+
+
+    public function register(Request $request)
+    {
+
+     
+
+     
+        try {
             $validator = Validator::make($request->all(), [
-                'first_name' => ['required', 'string', 'min:3'],
-                'last_name' => ['required', 'string', 'min:3'],
-                'email' => ['required', 'email'],
-                'phone_number' => ['required'],
-                'country' => ['required', 'string'],
-                'gender' => ['required', 'string'],
-                'password' => ['required', 'min:6','confirmed']
+                'first_name'=>'required|string|min:3',
+                'last_name'=>'required|string|min:3',
+                'email'=>'required|email|unique:users,email|string',
+                'phone_number' => 'required|numeric|min:10',
+                'country'=>'required|string',
+                'gender'=>'required|string',
+                'password'=>'required|min:6|confirmed'
             ]);
 
             if ($validator->fails()) {
@@ -50,7 +114,7 @@ class TaskerController extends Controller
         'country'=>$request->country,
         'gender'=>$request->gender,
           // Assign the role of "tasker" to the user
-        'role_id'=>'tasker',
+          'role_id'=>'tasker',
         'password'=>Hash::make($request->password)
     ]);
 
@@ -67,4 +131,8 @@ class TaskerController extends Controller
             return response()->json(['error' => "Sorry!!,Something went wrong during registration, please try again later"], 500);
         }
     }
+  
+
+   
+
 }

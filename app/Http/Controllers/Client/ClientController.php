@@ -8,9 +8,75 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Task;
+use App\Models\Offer;
 
 class ClientController extends Controller
 {
+    public function clientOwnCompletedTasks(Request $request)
+    {
+        $user_id =$request->user_id;
+
+        $tasks = Task::where('client_id',$user_id)
+         ->where('status', 'completed')
+        ->get();
+        return response()->json($tasks, 200);
+      
+    }
+    public function clientOwnRejectedTasks(Request $request)
+    {
+        $user_id =$request->user_id;
+
+        $tasks = Task::where('client_id',$user_id)
+         ->where('status', 'rejected')
+        ->get();
+        return response()->json($tasks, 200);
+      
+    }
+
+    public function clientOwnTasks(Request $request)
+    {
+        $user_id =$request->user_id;
+
+        $tasks = Task::where('client_id',$user_id)
+         ->where('status', 'OPEN')
+        ->get();
+        return response()->json($tasks, 200);
+      
+    }
+
+
+
+    public function clientOwnActiveTasks(Request $request)
+    {
+        $user_id =$request->user_id;
+
+        $tasks = Task::where('client_id',$user_id)
+        ->whereIn('status', [ 'assigned', 'in-progress'])
+        ->get();
+        return response()->json($tasks, 200);
+      
+    }
+
+
+    
+    public function clientOwnTaskOffers(Request $request)
+    {
+        $task_id =$request->task_id;
+      
+        $offer = Offer::where('task_id',$task_id)
+       
+        ->get();
+ 
+        return response()->json($offer, 200);
+      
+    }
+
+ 
+
+
+
+
     public function register(Request $request){
 
         try {
@@ -57,6 +123,9 @@ class ClientController extends Controller
             ]);
         }
     }
+
+
+ 
 
     public function login(Request $request){
 
