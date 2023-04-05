@@ -24,6 +24,7 @@ class Offer extends Model
     {
         return $this->belongsTo(Task::class);
     }
+
     public function tasker()
     {
         return $this->belongsTo(User::class);

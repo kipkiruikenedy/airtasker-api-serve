@@ -74,8 +74,10 @@ Route::post('/tasker-view-posted-task-by-id', [TaskerController::class, 'registe
 Route::post('/tasker-view-scheduled-payments', [TaskerController::class, 'register']);
 Route::get('/tasker-pending-tasks', [TaskerController::class, 'pendingTasks']);
 Route::get('/tasker-active-tasks', [TaskerController::class, 'activeTasks']);
+Route::get('/tasker-active-task/{id}', [TaskerController::class, 'activeTasksById']);
 Route::get('/tasker-completed-tasks', [TaskerController::class, 'completedTasks']);
 Route::put('/tasks/{taskId}/status', [TaskerController::class, 'updateTaskStatus']);
+Route::get('/tasker-active-task/{id}', [TaskerController::class, 'getActiveTask']);
 
 
 // CLIENT
@@ -106,7 +108,7 @@ Route::get('/pending-tasks', [TaskController::class, 'allPendingTasks']);
 Route::get('/rejected-tasks', [TaskController::class, 'allRejectedTasks']);
 Route::get('/asigned-tasks', [TaskController::class, 'allAsignedTasks']);
 Route::get('/tasks/{id}', [TaskController::class, 'findTaskByID']);
-Route::delete('/tasks/{id}', [TaskController::class, 'deleteById']);
+Route::delete('/task/{id}', [TaskController::class, 'deleteById']);
 
 // OFFER
 Route::post('/create-offer', [OfferController::class, 'createOffer']);

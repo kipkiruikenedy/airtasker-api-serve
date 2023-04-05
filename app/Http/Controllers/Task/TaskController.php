@@ -26,14 +26,14 @@ class TaskController extends Controller
   
     public function allPendingTasks()
     {
-        $tasks = Task::where('status','pending')->get();
+        $tasks = Task::where('status','pending') ->latest()->get();
         return response()->json($tasks, 200);
     }
 
     public function allTasks()
     {
         
-        $tasks = Task::all();
+        $tasks = Task::latest()->get();
         return response()->json($tasks, 200);
         
     }
@@ -41,29 +41,29 @@ class TaskController extends Controller
 
     public function OpenTasks()
     {
-        $tasks = Task::where('status','OPEN')->get();
+        $tasks = Task::where('status','OPEN')->latest()->get();
         return response()->json($tasks, 200);
     }
 
     
     public function allActiveTasks()
     {
-        $tasks = Task::where('status','active')->get();
+        $tasks = Task::where('status','active')->latest()->get();
         return response()->json($tasks, 200);
     }
     public function allCompletedTasks()
     {
-        $tasks = Task::where('status','completed')->get();
+        $tasks = Task::where('status','completed')->latest()->get();
         return response()->json($tasks, 200);
     }
     public function allRejectedTasks()
     {
-        $tasks = Task::where('status','rejected')->get();
+        $tasks = Task::where('status','rejected')->latest()->get();
         return response()->json($tasks, 200);
     }
     public function allAsignedTasks()
     {
-        $tasks = Task::where('status','asigned')->get();
+        $tasks = Task::where('status','asigned')->latest()->get();
         return response()->json($tasks, 200);
     }
 
@@ -118,14 +118,23 @@ class TaskController extends Controller
      */
     public function findTaskByID($id)
     {
-        $task = Task::find($id);
-
+        $task = Task::with('client','tasker')->find($id);
+    
         if (!$task) {
             return response()->json(['error' => 'Task not found'], 404);
         }
-
+    
+        $amount = $task->amount;
+        $fees = $amount * 0.16;
+        $receivable = $amount - $fees;
+        $task->amount = $amount;
+        $task->fees = $fees;
+        $task->receivable = $receivable;
+    
         return response()->json($task);
     }
+    
+
     
 
 

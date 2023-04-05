@@ -44,6 +44,7 @@ class TaskerController extends Controller
 
         $tasks = Task::where('tasker_id',$user_id)
         ->where('status', 'assigned')
+        ->latest()
         ->get();
         return response()->json($tasks, 200);
       
@@ -54,9 +55,22 @@ class TaskerController extends Controller
 
         $tasks = Task::where('tasker_id',$user_id)
         ->where('status', 'in-progress')
+        ->latest()
         ->get();
         return response()->json($tasks, 200);
       
+    }
+
+
+    public function activeTasksById($id)
+    {
+        $task = Task::find($id);
+
+        if (!$task) {
+            return response()->json(['error' => 'Task not found'], 404);
+        }
+
+        return response()->json($task);
     }
 
     public function completedTasks(Request $request)
@@ -65,9 +79,16 @@ class TaskerController extends Controller
 
         $tasks = Task::where('tasker_id',$user_id)
         ->where('status', 'completed')
+        ->latest()
         ->get();
         return response()->json($tasks, 200);
       
+    }
+
+    public function getActiveTask($id)
+    {
+        $task = Task::find($id);
+        return response()->json($task);
     }
 
 

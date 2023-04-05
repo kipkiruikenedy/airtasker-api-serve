@@ -19,6 +19,7 @@ class ClientController extends Controller
 
         $tasks = Task::where('client_id',$user_id)
          ->where('status', 'completed')
+         ->latest()
         ->get();
         return response()->json($tasks, 200);
       
@@ -29,6 +30,7 @@ class ClientController extends Controller
 
         $tasks = Task::where('client_id',$user_id)
          ->where('status', 'rejected')
+         ->latest()
         ->get();
         return response()->json($tasks, 200);
       
@@ -40,6 +42,7 @@ class ClientController extends Controller
 
         $tasks = Task::where('client_id',$user_id)
          ->where('status', 'OPEN')
+         ->latest()
         ->get();
         return response()->json($tasks, 200);
       
@@ -53,6 +56,7 @@ class ClientController extends Controller
 
         $tasks = Task::where('client_id',$user_id)
         ->whereIn('status', [ 'assigned', 'in-progress'])
+        ->latest()
         ->get();
         return response()->json($tasks, 200);
       
