@@ -7,6 +7,30 @@ use App\Models\Offer;
 
 class OfferController extends Controller
 {
+
+    public function findOfferByID(Request $request, $id)
+    {
+        try {
+            // Find the offer by ID
+            $offer = Offer::findOrFail($id);
+    
+            // Return success response
+            return response()->json([
+                'offer' => $offer,
+                'message' => 'Offer found successfully'
+            ], 200);
+    
+        } catch (\Throwable $th) {
+            // Return error response
+            return response()->json([
+                'message' => "Sorry, something went wrong while searching for the offer. Please try again later."
+            ], 500);
+        }
+    }
+    
+
+
+
     public function Offers()
     {
         $offers = Offer::all();
@@ -34,14 +58,14 @@ class OfferController extends Controller
         ], 422);
     }
 
-    // Fetch the tasker details using the tasker_id
-    $offer = new Offer([
+
+
+    $offer=Offer::create([
         'content' => $request->content,
         'tasker_id' => $request->tasker_id,
         'task_id' => $request->task_id,
     ]);
-    $offer->tasker = $offer->tasker()->first();
-    $offer->task = $offer->task()->first();
+  
 
     // Return the offer details along with the tasker details and task details
     return response()->json([

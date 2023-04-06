@@ -5,45 +5,40 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PrivateChart;
 
-
-
 class PrivateChartController extends Controller
 {
-    public function index(Request $request)
+    public function getUsers(Request $request, $id)
     {
-        $user = $request->user();
-        $receiverId = $request->input('receiver_id');
+        $users = PrivateChart::where('sender_id', $id)
+            ->orWhere('receiver_id', $id)
+            ->with('sender', 'receiver')
+            ->get()
+            ->unique('sender_id')
+            ->map(function ($chat) use ($id) {
+                return $chat->sender_id == $id ? $chat->receiver : $chat->sender;
+            });
 
-        $charts = PrivateChart::where(function ($query) use ($user, $receiverId) {
-            $query->where('sender_id', $user->id)
-                  ->where('receiver_id', $receiverId);
-        })->orWhere(function ($query) use ($user, $receiverId) {
-            $query->where('sender_id', $receiverId)
-                  ->where('receiver_id', $user->id);
-        })->orderBy('created_at', 'desc')->get();
-
-        return response()->json($charts);
+        return response()->json($users);
     }
 
-    public function getChart(Request $request, $userId) {
-        $authUserId = 2;
-        $chart = PrivateChart::where(function($query) use ($authUserId, $userId) {
-            $query->where('sender_id', $authUserId)->where('receiver_id', $userId);
-        })->orWhere(function($query) use ($authUserId, $userId) {
-            $query->where('sender_id', $userId)->where('receiver_id', $authUserId);
-        })->with('sender', 'receiver')->first();
-    
-        if (!$chart) {
-            $chart = new PrivateChart();
-            $chart->sender_id = $authUserId;
-            $chart->receiver_id = $userId;
-            $chart->save();
-        }
-    
-        return response()->json($chart);
+
+
+
+    public function getMessages(Request $request)
+    {
+        $sender_id = $request->query('sender_id');
+        $receiver_id = $request->query('receiver_id');
+        $task_id = $request->query('task_id');
+
+        $messages = PrivateChart::where(function ($query) use ($sender_id, $receiver_id) {
+            $query->where('sender_id', $sender_id)->where('receiver_id', $receiver_id);
+        })->orWhere(function ($query) use ($sender_id, $receiver_id) {
+            $query->where('sender_id', $receiver_id)->where('receiver_id', $sender_id);
+        })->where('task_id', $task_id)->get();
+
+        return response()->json($messages);
     }
-    
-    
+
 
 
 
@@ -63,8 +58,9 @@ class PrivateChartController extends Controller
         return response()->json($chart);
     }
 
-    public function markAsRead(Request $request,PrivateChart $chart)
+    public function markAsRead(Request $request, $chart)
     {
+        $chart = PrivateChart::findOrFail($chart);
         $chart->read_at = now();
         $chart->save();
 

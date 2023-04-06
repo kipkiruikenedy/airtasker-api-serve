@@ -127,9 +127,12 @@ class TaskController extends Controller
         $amount = $task->amount;
         $fees = $amount * 0.16;
         $receivable = $amount - $fees;
+        $amountPayable = $amount + $fees;
+
         $task->amount = $amount;
         $task->fees = $fees;
         $task->receivable = $receivable;
+        $task->amountPayable = $amountPayable;
     
         return response()->json($task);
     }

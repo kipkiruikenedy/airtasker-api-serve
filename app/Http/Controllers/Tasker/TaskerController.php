@@ -28,12 +28,12 @@ class TaskerController extends Controller
             // return success response
             return response()->json([
                 'task' => $task,
-                'msg' => 'Task status updated successfully'
+                'message' => 'Task status updated successfully'
             ], 200);
     
         } catch (\Throwable $th) {
             // return error response
-            return response()->json(['error' => "Sorry!!,Something went wrong during task status update, please try again later"], 500);
+            return response()->json(['message' => "Sorry!!,Something went wrong during task status update, please try again later"], 500);
         }
     }
     

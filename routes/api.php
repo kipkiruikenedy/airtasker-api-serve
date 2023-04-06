@@ -85,6 +85,7 @@ Route::post('/register/client', [ClientController::class, 'register']);
 Route::get('/client/own-bidding-tasks', [ClientController::class, 'clientOwnTasks']);
 Route::get('/client/own-active-tasks', [ClientController::class, 'clientOwnActiveTasks']);
 Route::get('/client/own-completed-tasks', [ClientController::class, 'clientOwnCompletedTasks']);
+Route::get('/client/own-requested-payment-tasks', [ClientController::class, 'clientOwnRequestedPaymentTasks']);
 Route::get('/client/own-rejected-tasks', [ClientController::class, 'clientOwnRejectedTasks']);
 Route::get('/client/task-offer', [ClientController::class, 'clientOwnTaskOffers']);
 
@@ -113,6 +114,7 @@ Route::delete('/task/{id}', [TaskController::class, 'deleteById']);
 // OFFER
 Route::post('/create-offer', [OfferController::class, 'createOffer']);
 Route::get('/offers', [OfferController::class, 'Offers']);
+Route::get('/offers/{id}', [OfferController::class, 'findOfferByID']);
 Route::get('/categories', [AdminController::class, 'categories']);
 
 // PAYMENTS
@@ -125,11 +127,11 @@ Route::post('/help', [HelpController::class, 'store'])->name('help.store');
 
 
 
-// PRIVATE CHART
+// PRIVATE CHAT
 Route::put('/chats/{chart}/mark-as-read', [PrivateChartController::class, 'markAsRead']);
 Route::get('/chats/users/{id}', [UserController::class, 'getUsers']);
 Route::post('/chats', [PrivateChartController::class, 'store']);
-Route::get('/chats/{userId}', [PrivateChartController::class, 'getChart']);
+Route::get('/chats', [PrivateChartController::class, 'getMessages']);
 
 
 // RATING

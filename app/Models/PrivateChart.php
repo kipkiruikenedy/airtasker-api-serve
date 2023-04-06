@@ -13,7 +13,7 @@ class PrivateChart extends Model
         'sender_id',
         'receiver_id',
         'task_id',
-        'read_at',
+        'read_at'
     ];
 
     public function sender()

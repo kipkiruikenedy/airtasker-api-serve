@@ -13,6 +13,19 @@ use App\Models\Offer;
 
 class ClientController extends Controller
 {
+    public function clientOwnRequestedPaymentTasks(Request $request)
+    {
+        $user_id =$request->user_id;
+
+        $tasks = Task::where('client_id',$user_id)
+         ->where('status', 'requestedPayment')
+         ->latest()
+        ->get();
+        return response()->json($tasks, 200);
+      
+    }
+
+
     public function clientOwnCompletedTasks(Request $request)
     {
         $user_id =$request->user_id;
@@ -24,6 +37,9 @@ class ClientController extends Controller
         return response()->json($tasks, 200);
       
     }
+
+
+
     public function clientOwnRejectedTasks(Request $request)
     {
         $user_id =$request->user_id;
@@ -118,7 +134,7 @@ class ClientController extends Controller
         
                 return response()->json([
                     'user'=>$user,
-                    'msg'=>'register successfully'
+                    'message'=>'Successfully registered! Please verify your email.'
                 ],201);
     
         } catch (\Throwable $th) {
