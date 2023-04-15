@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('task_payment_trackers', function (Blueprint $table) {
-            $table->id();
+           $table->bigIncrements('id');
             $table->string("user_id");
             $table->string("amount");
             $table->string("payment_status")->default(0)->comment("0=unpaid","1=paid");

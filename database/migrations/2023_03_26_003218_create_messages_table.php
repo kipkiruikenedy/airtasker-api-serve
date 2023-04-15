@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('messages', function (Blueprint $table) {
-            $table->id();
+           $table->bigIncrements('id');
             $table->text('content');
             // $table->string('status')->default("unread");
             $table->unsignedBigInteger('sender_id');

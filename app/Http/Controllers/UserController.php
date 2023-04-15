@@ -8,7 +8,23 @@ class UserController extends Controller
 {
     public function getUsers($id)
     {
-        $users = User::where('id', '!=', $id)->get();
+        $users = User::all();
         return response()->json($users);
+    }
+    public function allUsers($id)
+    {
+        $users = User::all();
+        return response()->json($users);
+    }
+
+    public function UserById($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['error' => 'user not found'], 404);
+        }
+
+        return response()->json($user);
     }
 }

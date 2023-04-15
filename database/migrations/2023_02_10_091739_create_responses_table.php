@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('responses', function (Blueprint $table) {
-            $table->id();
+           $table->bigIncrements('id');
             $table->string("tasker_id");
             $table->string("task_id");
             $table->timestamp("date");

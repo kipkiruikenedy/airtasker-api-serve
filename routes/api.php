@@ -67,13 +67,14 @@ Route::get('/admin/completed-tasks', [AdminController::class, 'allCompletedTask'
 
 // TASKER
 Route::post('/register/tasker', [TaskerController::class, 'register']);
-Route::post('/tasker-tasks', [TaskerController::class, 'register']);//fetch tasks worked on
-Route::post('/tasker-tasks/{id}', [TaskerController::class, 'register']);//fetch tasks worked on by id
-Route::post('/tasker-view-posted-tasks', [TaskerController::class, 'register']);//latest tasks
-Route::post('/tasker-view-posted-task-by-id', [TaskerController::class, 'register']);
-Route::post('/tasker-view-scheduled-payments', [TaskerController::class, 'register']);
+
 Route::get('/tasker-pending-tasks', [TaskerController::class, 'pendingTasks']);
 Route::get('/tasker-active-tasks', [TaskerController::class, 'activeTasks']);
+Route::get('/tasker-paid-tasks', [TaskerController::class, 'paidTasks']);
+
+Route::get('/tasker-requested-payment-tasks', [TaskerController::class, 'RequestedPayTasks']);
+Route::get('/tasker-in-progress-tasks', [TaskerController::class, 'InProgressTasks']);
+
 Route::get('/tasker-active-task/{id}', [TaskerController::class, 'activeTasksById']);
 Route::get('/tasker-completed-tasks', [TaskerController::class, 'completedTasks']);
 Route::put('/tasks/{taskId}/status', [TaskerController::class, 'updateTaskStatus']);
@@ -136,3 +137,24 @@ Route::get('/chats', [PrivateChartController::class, 'getMessages']);
 
 // RATING
 Route::post('/ratings', [\App\Http\Controllers\RatingController::class, 'store']);
+Route::get('/ratings/{id}', [\App\Http\Controllers\RatingController::class, 'getTaskerRating']);
+
+
+// EMAIL
+// Verify email
+Route::get('/email/verify/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
+    ->middleware(['signed', 'throttle:6,1'])
+    ->name('verification.verify');
+
+// Resend link to verify email
+Route::post('/email/verify/resend', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Verification link sent!');
+})->middleware(['auth:api', 'throttle:6,1'])->name('verification.send');
+
+
+
+//USER
+
+Route::get('/users', [\App\Http\Controllers\UserController::class, 'allUsers']);
+Route::get('/users/{id}', [\App\Http\Controllers\UserController::class, 'UserById']);

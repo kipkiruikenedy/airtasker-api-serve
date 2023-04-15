@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('private_charts', function (Blueprint $table) {
-            $table->id();
+           $table->bigIncrements('id');
             $table->text('content');
             $table->unsignedBigInteger('sender_id');
             $table->foreign('sender_id')->references('id')->on('users')->onDelete('cascade');

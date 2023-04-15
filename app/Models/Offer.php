@@ -13,6 +13,7 @@ class Offer extends Model
         'content',
         'tasker_id' ,
         'task_id',
+        'price',
     ];
 
     /**

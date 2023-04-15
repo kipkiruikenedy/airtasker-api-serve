@@ -27,31 +27,44 @@ class ClientPayTaskController extends Controller
             'amount' => 'required',
             'stripe_token' => 'required',
         ]);
+    
+        // Round off the amount to 4 decimal places
+        $roundedAmount = round($validatedData['amount'], 4);
+    
         $task = Task::find($validatedData['task_id']);
-
+    
+        // Check if payment already exists for task and client with "paid" status
+        $existingPayment = ClientPayTask::where('task_id', $validatedData['task_id'])
+            ->where('client_id', $validatedData['client_id'])
+            ->where('status', 'paid')
+            ->first();
+        if ($existingPayment) {
+            return response()->json(['message' => 'Payment already made'], 200);
+        }
+    
         $payment = ClientPayTask::create([
             'task_id' => $validatedData['task_id'],
             'tasker_id' => $validatedData['tasker_id'],
             'client_id' => $validatedData['client_id'],
-            'amount' => $validatedData['amount'],
+            'amount' => $roundedAmount, // Use the rounded amount
             'status' => 'pending',
             'stripe_token' => $validatedData['stripe_token'],
         
         ]);
-
+    
         try {
             $payment->charge();
             $payment->update(['status' => 'paid']);
           
-
- //Update task status and tasker ID
+    
+            //Update task status and tasker ID
             $task->tasker_id = $validatedData['tasker_id'];
             $task->status = 'assigned';
             $task->save();
     
             // $client_email = $payment->client->email;
             // $admin_email = config('mail.admin_email');
-
+    
             // Mail::to($client_email)->cc($admin_email)->send(new PaymentNotification($payment));
         } catch (\Exception $e) {
             $payment->update(['status' => 'failed']);
@@ -60,21 +73,8 @@ class ClientPayTaskController extends Controller
             // Mail::to($client_email)->cc($admin_email)->send(new PaymentNotification($payment));
             return response()->json(['error' => $e->getMessage()], 400);
         }
-
+    
         return response()->json(['message' => 'Payment successful'], 200);
     }
-    public function update(Request $request, $id)
-    {
-        $payment = ClientPayTask::findOrFail($id);
-        $validatedData = $request->validate([
-            'status' => ['required', Rule::in(['paid', 'failed'])],
-        ]);
     
-        $payment->status = $validatedData['status'];
-        $payment->save();
-    
-        return response()->json(['message' => 'Payment status updated'], 200);
-    }
-    
-  
 }

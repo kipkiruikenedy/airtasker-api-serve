@@ -14,13 +14,15 @@ return new class extends Migration
     public function up()
     {
         Schema::create('ratings', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('tutor_id');
-            $table->foreign('tutor_id')->references('id')->on('users')->onDelete('cascade');
-            $table->unsignedBigInteger('student_id');
-            $table->foreign('student_id')->references('id')->on('users')->onDelete('cascade');
-            $table->integer('rating');
-            $table->text('comment')->nullable();
+           $table->bigIncrements('id');
+           $table->integer('rating');
+           $table->text('comment')->nullable();
+
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+
+            $table->unsignedBigInteger('task_id');
+            $table->foreign('task_id')->references('id')->on('tasks')->onDelete('cascade');
             $table->timestamps();
         });
     }

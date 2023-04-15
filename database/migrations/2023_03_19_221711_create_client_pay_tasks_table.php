@@ -14,11 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::create('client_pay_tasks', function (Blueprint $table) {
-            $table->id();
+           $table->bigIncrements('id');
             $table->unsignedBigInteger('task_id');
             $table->unsignedBigInteger('tasker_id');
             $table->unsignedBigInteger('client_id');
-            $table->decimal('amount', 8, 2);
+            $table->decimal('amount', 16, 8)->default('0.00');
             $table->enum('status', ['pending', 'paid', 'failed']);
             $table->string('stripe_token');
 

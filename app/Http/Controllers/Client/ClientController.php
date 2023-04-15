@@ -15,15 +15,21 @@ class ClientController extends Controller
 {
     public function clientOwnRequestedPaymentTasks(Request $request)
     {
-        $user_id =$request->user_id;
-
-        $tasks = Task::where('client_id',$user_id)
-         ->where('status', 'requestedPayment')
-         ->latest()
-        ->get();
-        return response()->json($tasks, 200);
-      
+        $user_id = $request->user_id;
+    
+        $tasks = Task::where('client_id', $user_id)
+            ->where('status', 'requestedPayment')
+            ->latest()
+            ->get();
+        
+        $total_tasks = $tasks->count();
+    
+        return response()->json([
+            'tasks' => $tasks,
+            'total_tasks' => $total_tasks
+        ], 200);
     }
+    
 
 
     public function clientOwnCompletedTasks(Request $request)
@@ -97,52 +103,69 @@ class ClientController extends Controller
 
 
 
-    public function register(Request $request){
-
-        try {
-            $validator=Validator::make($request->all(),[
-                'first_name'=>'required|string|min:3',
-                'last_name'=>'required|string|min:3',
-                'email'=>'required|email|unique:users,email|string',
-                'phone_number' => 'required|numeric|min:10',
-                'country'=>'required|string',
-                'gender'=>'required|string',
-                'password'=>'required|min:6|confirmed'
-            ]);
-       
-        
-       
+    public function register(Request $request)
+    {
+        // Define validation rules
+        $rules = [
+            'first_name' => 'required|string|min:3',
+            'last_name' => 'required|string|min:3',
+            'email' => 'required|email|unique:users,email|string',
+            'phone_number' => 'required|numeric|min:10|unique:users,phone_number',
+            'country' => 'required|string',
+            'gender' => 'required|string',
+            'password'=> [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$/'
+            ],
+            'profile_photo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ];
     
-            if($validator->fails()){
-                //throw back any errors of validation if they arise
-                return response(['errors'=>$validator->errors()->all()], 422);    
+        $validator = Validator::make($request->all(), $rules);
+    
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+    
+      
+    
+        try {
+            $user = User::create([
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'email' => $request->email,
+                'phone_number' => $request->phone_number,
+                'country' => $request->country,
+                'gender' => $request->gender,
+                // Assign the role of "tasker" to the user
+                'role_id' => 'client',
+                'password' => Hash::make($request->password)
+            ]);
+    
+            // Store the profile photo if it was provided
+            if ($request->hasFile('profile_photo')) {
+                $photo = $request->file('profile_photo');
+                $filename = time() . '_' . $photo->getClientOriginalName();
+                $photo->storeAs('public/profile_photos', $filename);
+                $user->profile_photo = $filename;
+                $user->save();
             }
     
-                   
-        
-                $user=User::create([
-                    'first_name'=>$request->first_name,
-                    'last_name'=>$request->last_name,
-                    'email'=>$request->email,
-                    'phone_number'=>$request->phone_number,
-                    'country'=>$request->country,
-                    'gender'=>$request->gender,
-                      // Assign the role of "client" to the user
-                    'role_id'=>'client',
-                    'password'=>Hash::make($request->password)
-                ]);
-        
-                return response()->json([
-                    'user'=>$user,
-                    'message'=>'Successfully registered! Please verify your email.'
-                ],201);
-    
-        } catch (\Throwable $th) {
             return response()->json([
-                'message'=>$th
-            ]);
+                'user' => $user,
+                'msg' => 'register successfully'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Something went wrong during registration, please try again later'
+            ], 500);
         }
     }
+    
 
 
  

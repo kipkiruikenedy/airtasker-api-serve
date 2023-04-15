@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('assign_taskers', function (Blueprint $table) {
-            $table->id();
+           $table->bigIncrements('id');
             $table->unsignedBigInteger('task_id');
             $table->unsignedBigInteger('tasker_id');
             $table->enum('status', ['applied', 'assigned', 'completed'])->default('applied');
