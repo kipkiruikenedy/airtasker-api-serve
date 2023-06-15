@@ -8,6 +8,7 @@
 
     <p>First Name: {{ $firstName }}</p>
     <p>Last Name: {{ $lastName }}</p>
+    <p>Last Name: {{ $phone }}</p>
     <p>Email: {{ $email }}</p>
 </div>
 

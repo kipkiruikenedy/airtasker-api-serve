@@ -213,18 +213,19 @@ class TaskerController extends Controller
         $user->save();
       // Send email to admin
          // Send email to admin
-         $userData = [
-            'role'=>'Client',
-            'firstName' => $user->first_name,
-            'lastName' => $user->last_name,
-            'email' => $user->email
-        ];
+        //  $userData = [
+        //     'role'=>'Tasker',
+        //     'firstName' => $user->first_name,
+        //     'lastName' => $user->last_name,
+        //     'email' => $user->email,
+        //     'phone' => $user->phone_number
+        // ];
         
-        Mail::send('emails.new_user_registered', $userData, function ($message) {
-            $message->from("support@airtaska.com")
-                ->to("kipkiruikenedy@gmail.com") // Replace with the admin's email address
-                ->subject('New User Registration - Airtaska');
-        });
+        // Mail::send('emails.new_user_registered', $userData, function ($message) {
+        //     $message->from("support@airtaska.com")
+        //         ->to("kipkiruikenedy@gmail.com") // Replace with the admin's email address
+        //         ->subject('New User Registration - Airtaska');
+        // });
 
 
             return response()->json([

@@ -156,18 +156,18 @@ class ClientController extends Controller
             }
     
             // Send email to admin
-            $userData = [
-                'role'=>'Client',
-                'firstName' => $user->first_name,
-                'lastName' => $user->last_name,
-                'email' => $user->email
-            ];
+            // $userData = [
+            //     'role'=>'Client',
+            //     'firstName' => $user->first_name,
+            //     'lastName' => $user->last_name,
+            //     'email' => $user->email
+            // ];
             
-            Mail::send('emails.new_user_registered', $userData, function ($message) {
-                $message->from("support@airtaska.com")
-                    ->to("kipkiruikenedy@gmail.com") // Replace with the admin's email address
-                    ->subject('New User Registration - Airtaska');
-            });
+            // Mail::send('emails.new_user_registered', $userData, function ($message) {
+            //     $message->from("support@airtaska.com")
+            //         ->to("kipkiruikenedy@gmail.com") // Replace with the admin's email address
+            //         ->subject('New User Registration - Airtaska');
+            // });
 
 
       
