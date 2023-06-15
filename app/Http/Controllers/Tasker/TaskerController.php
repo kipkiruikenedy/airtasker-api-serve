@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Task;
-
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NewUser;
 
 class TaskerController extends Controller
 {
@@ -149,9 +150,9 @@ class TaskerController extends Controller
             'password'=> [
                 'required',
                 'string',
-                'min:8',
+                'min:6',
                 'confirmed',
-                'regex:/^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$/'
+               
             ],
             'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ];
@@ -193,7 +194,9 @@ class TaskerController extends Controller
                 'gender' => $request->gender,
                 // Assign the role of "tasker" to the user
                 'role_id' => 'tasker',
-                'password' => Hash::make($request->password)
+                'password' => Hash::make($request->password),
+                // Disable account until email is verified
+       
             ]);
     
             // Store the profile photo if it was provided
@@ -204,7 +207,26 @@ class TaskerController extends Controller
                 $user->profile_photo = $filename;
                 $user->save();
             }
-    
+
+             // Disable account until email is verified
+        $user->is_disabled = true;
+        $user->save();
+      // Send email to admin
+         // Send email to admin
+         $userData = [
+            'role'=>'Client',
+            'firstName' => $user->first_name,
+            'lastName' => $user->last_name,
+            'email' => $user->email
+        ];
+        
+        Mail::send('emails.new_user_registered', $userData, function ($message) {
+            $message->from("support@airtaska.com")
+                ->to("kipkiruikenedy@gmail.com") // Replace with the admin's email address
+                ->subject('New User Registration - Airtaska');
+        });
+
+
             return response()->json([
                 'user' => $user,
                 'msg' => 'register successfully'

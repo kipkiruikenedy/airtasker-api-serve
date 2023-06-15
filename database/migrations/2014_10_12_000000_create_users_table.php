@@ -21,11 +21,13 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->bigInteger('phone_number')->unique();
             $table->timestamp('phone_verified_at')->nullable();
+            $table->boolean('is_disabled')->default(true);
             $table->string('country');
             $table->string('gender');
-            $table->string('role_id');
+            $table->string('role_id')->default(0);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('token')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

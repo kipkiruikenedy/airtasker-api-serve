@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Task;
 use App\Models\Offer;
+use Illuminate\Support\Facades\Mail;
 
 class ClientController extends Controller
 {
@@ -102,6 +103,7 @@ class ClientController extends Controller
 
 
 
+ 
 
     public function register(Request $request)
     {
@@ -116,11 +118,11 @@ class ClientController extends Controller
             'password'=> [
                 'required',
                 'string',
-                'min:8',
+                'min:6',
                 'confirmed',
-                'regex:/^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$/'
+             
             ],
-            'profile_photo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ];
     
         $validator = Validator::make($request->all(), $rules);
@@ -130,8 +132,6 @@ class ClientController extends Controller
                 'errors' => $validator->errors(),
             ], 422);
         }
-    
-      
     
         try {
             $user = User::create([
@@ -155,6 +155,23 @@ class ClientController extends Controller
                 $user->save();
             }
     
+            // Send email to admin
+            $userData = [
+                'role'=>'Client',
+                'firstName' => $user->first_name,
+                'lastName' => $user->last_name,
+                'email' => $user->email
+            ];
+            
+            Mail::send('emails.new_user_registered', $userData, function ($message) {
+                $message->from("support@airtaska.com")
+                    ->to("kipkiruikenedy@gmail.com") // Replace with the admin's email address
+                    ->subject('New User Registration - Airtaska');
+            });
+
+
+      
+    
             return response()->json([
                 'user' => $user,
                 'msg' => 'register successfully'
@@ -166,8 +183,6 @@ class ClientController extends Controller
         }
     }
     
-
-
  
 
     public function login(Request $request){

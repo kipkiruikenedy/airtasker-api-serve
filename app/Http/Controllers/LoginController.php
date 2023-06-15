@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
+
 class LoginController extends Controller
 {
  
@@ -20,7 +21,7 @@ class LoginController extends Controller
        try {
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
-            $token = $user->createToken('authToken')->accessToken;
+            $token = 123456;
             return response()->json([
                 'token' => $token,
                 'user' => $user
@@ -42,4 +43,3 @@ class LoginController extends Controller
         
         
     }
-

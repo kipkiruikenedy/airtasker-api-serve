@@ -14,8 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return ['Laravel' => app()->version()];
 });
-Route::get('/healthCheck', function () {
-    return response()->json(['status' => 'ok']);
-});
+
+require __DIR__.'/auth.php';

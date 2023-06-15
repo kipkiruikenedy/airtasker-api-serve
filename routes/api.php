@@ -158,3 +158,8 @@ Route::post('/email/verify/resend', function (Request $request) {
 
 Route::get('/users', [\App\Http\Controllers\UserController::class, 'allUsers']);
 Route::get('/users/{id}', [\App\Http\Controllers\UserController::class, 'UserById']);
+
+//FORGOT PASSWORD
+
+Route::post('/forgot-password', [\App\Http\Controllers\ForgotPasswordController::class, 'sendForgotPasswordEmail']);
+Route::post('/change-password', [\App\Http\Controllers\ForgotPasswordController::class, 'changePassword']);

@@ -62,16 +62,17 @@ class ClientPayTaskController extends Controller
             $task->status = 'assigned';
             $task->save();
     
-            // $client_email = $payment->client->email;
-            // $admin_email = config('mail.admin_email');
+            $client_email = $payment->client->email;
+            $admin_email = config('mail.admin_email');
     
-            // Mail::to($client_email)->cc($admin_email)->send(new PaymentNotification($payment));
+            Mail::to($client_email)->cc($admin_email)->send(new PaymentNotification($payment));
         } catch (\Exception $e) {
             $payment->update(['status' => 'failed']);
-            // $client_email = $payment->client->email;
-            // $admin_email = config('mail.admin_email');
-            // Mail::to($client_email)->cc($admin_email)->send(new PaymentNotification($payment));
+            $client_email = $payment->client->email;
+            $admin_email = config('mail.admin_email');
+            Mail::to($client_email)->cc($admin_email)->send(new PaymentNotification($payment));
             return response()->json(['error' => $e->getMessage()], 400);
+            
         }
     
         return response()->json(['message' => 'Payment successful'], 200);
