@@ -25,12 +25,12 @@ class Offer extends Model
 
   
 
-    public function task(): BelongsTo
+    public function task()
     {
         return $this->belongsTo(Task::class, 'task_id');
     }
 
-    public function tasker(): BelongsTo
+    public function tasker()
     {
         return $this->belongsTo(User::class, 'tasker_id');
     }

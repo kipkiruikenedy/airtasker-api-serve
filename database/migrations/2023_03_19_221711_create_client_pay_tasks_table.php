@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('task_id');
             $table->unsignedBigInteger('tasker_id');
             $table->unsignedBigInteger('client_id');
-            $table->decimal('amount', 16, 8)->default('0.00');
+            $table->decimal('amount', 10, 2)->default('0.00');
             $table->enum('status', ['pending', 'paid', 'failed']);
             $table->string('stripe_token');
 

@@ -6,12 +6,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Laravel\Passport\HasApiTokens;
 
 
-class User extends Authenticatable implements MustVerifyEmail
+
+
+
+
+
+class User extends  Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -28,7 +32,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'country',
         'gender',
         'role_id',
-        'token',
+        'otp',
+        'card_number',
         'password',
         'profile_photo',
     ];
@@ -55,6 +60,11 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Offer::class);
     }
+
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class);
+    }
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -63,6 +73,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $hidden = [
         'password',
         'remember_token',
+        'card_number',
     ];
 
     /**

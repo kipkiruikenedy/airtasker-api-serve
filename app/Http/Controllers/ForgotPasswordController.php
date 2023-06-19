@@ -20,44 +20,54 @@ class ForgotPasswordController extends Controller
             'email' => 'required|email',
          ];
 
-         $validatedData = $request->validate($rules);
-         if ($validatedData) {
-            $email = $request->input('email');
-            $userData = User::where('email', $email)->first();
-
-            if ($userData != null && $userData->email == $email) {
-               // Generate a reset token and update the user's record
-               $token = Str::random(32);
-
-               $userData->token = $token; // Update the user's record
-
-               if ($userData->save()) {
-                  $token = urlencode($token); // Encode the token for URL safety
-                  $url = url('/account/login/reset_password?token=' . $token);
-
-                  $emailMessage = "<b>Hello " . $userData->firstName . "</b>\n\n" .
-                     "You requested to reset your password. If you did not authorize this, simply ignore this email.\n\n" .
-                     "But if you did, click <b><a href='$url'>Here</a></b> to reset your password. If that doesn't work, copy-paste this link to your browser: " .
-                     "<a href='$url'>$url</a>";
-                  Mail::send([], [], function ($message) use ($emailMessage, $email) {
-                     $message->from("support@airtaska.com")
-                        ->to($email)
-                        ->subject('Password Reset - Airtaska')
-                        ->html($emailMessage);
-                  });
-
-
-
-                  return response()->json(['success' => true, 'message' => 'A link has been sent to your email: ' . $email]);
-               } else {
-                  return response()->json(['success' => false, 'message' => 'Email not found']);
-               }
-            } else {
-               $data['validation'] = $request->validate([
-                  'email' => 'exists:users,email',
-               ]);
-            }
+         $email = $request->input('email');
+         $userData = User::where('email', $email)->first();
+         if (!$userData) {
+            return response()->json([
+               'message' => 'User with' . $email . 'not found in the system'
+            ]);
          }
+
+         if ($userData != null && $userData->email == $email) {
+            $otp = str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
+
+            $userData->otp = $otp; // Update the user's record
+
+            if ($userData->save()) {
+               $emailData = [
+                  'firstName' => $userData->first_name,
+                  'otp' => $otp,
+               ];
+               Mail::send('emails.forgot_password', $emailData, function ($message) use ($email) {
+                  $message->from("support@airtaska.com")
+                     ->to($email)
+                     ->subject('Password Reset - Airtaska');
+               });
+               return response()->json(['message' => 'A link has been sent to your email: ' . $email]);
+            } else {
+               return response()->json(['message' => 'Email not found']);
+            }
+         } else {
+            $data['validation'] = $request->validate([
+               'email' => 'exists:users,email',
+            ]);
+         }
+      }
+   }
+
+
+
+
+   public function otp(Request $request)
+   {
+      $data = [];
+      if ($request->isMethod('post')) {
+         $rules = [
+            'otp' => 'required',
+         ];
+
+         $otp = $request->input('otp');
+         $userData = User::where('otp', $otp)->first();
       }
    }
 

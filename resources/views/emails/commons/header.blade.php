@@ -22,8 +22,7 @@
 </head>
 <body>
     <div class="header">
-        <img src="{{ asset('../../../../public/images/Capture.PNG') }}" alt="Airtaska">
-        <h1>Airtaska</h1>
+     <p>Airtaska</p>
     </div>
 </body>
 </html>

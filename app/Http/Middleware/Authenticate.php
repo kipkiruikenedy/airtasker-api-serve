@@ -1,35 +1,31 @@
-<?php namespace App\Http\Middleware;
+<?php
+namespace App\Http\Middleware;
 
 use Closure;
+use Illuminate\Auth\Middleware\Authenticate as Middleware;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\Response;
 
-class CORS {
-
+class Authenticate extends Middleware
+{
     /**
-     * Handle an incoming request.
+     * Handle an unauthenticated user.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
+     * @param  array  $guards
+     * @return void
+     *
+     * @throws \Illuminate\Auth\AuthenticationException
      */
-    public function handle($request, Closure $next)
+    
+    protected function unauthenticated($request, array $guards)
     {
-
-        header("Access-Control-Allow-Origin: *");
-
-        // ALLOW OPTIONS METHOD
-        $headers = [
-            'Access-Control-Allow-Methods'=> 'POST, GET, OPTIONS, PUT, DELETE',
-            'Access-Control-Allow-Headers'=> 'Content-Type, X-Auth-Token, Origin'
-        ];
-        if($request->getMethod() == "OPTIONS") {
-            // The client-side application can set only headers allowed in Access-Control-Allow-Headers
-            return Response::make('OK', 200, $headers);
+        if ($request->expectsJson()) {
+          
+          
         }
 
-        $response = $next($request);
-        foreach($headers as $key => $value)
-            $response->header($key, $value);
-        return $response;
+        // Redirect the user to the login page for web requests
+        return redirect()->guest(route('login'));
     }
-
 }

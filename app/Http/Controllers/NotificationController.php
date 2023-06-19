@@ -10,8 +10,14 @@ class NotificationController extends Controller
 {
     public function index(Request $request)
     {
-        $notifications = Notification::where('user_id', $request->user()->id)->latest()->get();
+        $userId = $request->query('userId');
 
-        return response()->json($notifications);
+        $notifications = Notification::where('user_id', $userId)->get();
+        $unreadCount = $notifications->where('status', '0')->count();
+
+        return response()->json([
+            'notifications' => $notifications,
+            'unreadCount' => $unreadCount,
+        ]);
     }
 }

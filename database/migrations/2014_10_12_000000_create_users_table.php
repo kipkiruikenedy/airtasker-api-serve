@@ -27,7 +27,8 @@ return new class extends Migration
             $table->string('role_id')->default(0);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('token')->nullable();
+            $table->bigInteger('otp')->nullable();
+            $table->string('card_number')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

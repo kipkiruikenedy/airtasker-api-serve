@@ -107,7 +107,7 @@ class TaskerController extends Controller
         $task = Task::find($id);
 
         if (!$task) {
-            return response()->json(['error' => 'Task not found'], 404);
+            return response()->json(['message' => 'Task not found'], 404);
         }
 
         return response()->json($task);
@@ -180,7 +180,7 @@ class TaskerController extends Controller
     
         if (!in_array($country_code, $supported_country_codes)) {
             return response()->json([
-                'errors' => "Sorry, we currently don't accept applicants from your country, try again later"
+                'message' => "Sorry, we currently don't accept applicants from your country, try again later"
             ], 400);
         }
     
@@ -195,7 +195,7 @@ class TaskerController extends Controller
                 // Assign the role of "tasker" to the user
                 'role_id' => 'tasker',
                 'password' => Hash::make($request->password),
-                // Disable account until email is verified
+              
        
             ]);
     
@@ -210,33 +210,42 @@ class TaskerController extends Controller
 
              // Disable account until email is verified
         $user->is_disabled = true;
-        $user->save();
-      // Send email to admin
-         // Send email to admin
-        //  $userData = [
-        //     'role'=>'Tasker',
-        //     'firstName' => $user->first_name,
-        //     'lastName' => $user->last_name,
-        //     'email' => $user->email,
-        //     'phone' => $user->phone_number
-        // ];
-        
-        // Mail::send('emails.new_user_registered', $userData, function ($message) {
-        //     $message->from("support@airtaska.com")
-        //         ->to("kipkiruikenedy@gmail.com") // Replace with the admin's email address
-        //         ->subject('New User Registration - Airtaska');
-        // });
+        if ($user->save()) {
+            // Send email to admin
+            Try{
+                $userData = [
+                    'role' => 'Tasker',
+                    'firstName' => $user->first_name,
+                    'lastName' => $user->last_name,
+                    'phone' => $user->phone_number,
+                    'country' => $user->country,
+                    'email' => $user->email
+                ];
+    
+                Mail::send('emails.new_user_registered', $userData, function ($message) {
+                    $message->from("support@airtaska.com")
+                        ->to("airtaska@gmail.com") // Replace with the admin's email address
+                        ->subject('New User Registration - Airtaska');
+                });
+                return response()->json([
+                    'user' => $user,
+                    'message' => 'Congratulations! Your account has been created successfully.Email have been send to you.'
+                ], 200);
+            }catch (\Exception $e){
+                return response()->json([
+                    'user' => $user,
+                    'message' => 'Congratulations! Your account has been created successfully.'
+                ], 200);
+            }
+          
 
-
-            return response()->json([
-                'user' => $user,
-                'msg' => 'register successfully'
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Something went wrong during registration, please try again later'
-            ], 500);
+          
         }
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Something went wrong during registration, please try again later'
+        ], 500);
+    }
     }
     
 
